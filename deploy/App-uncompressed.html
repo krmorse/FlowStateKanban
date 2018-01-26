@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Kanban Board</title>
+    <title>FlowState Kanban Board</title>
 
     <script type="text/javascript" src="/apps/2.1/sdk.js"></script>
 
@@ -195,6 +195,74 @@
     });
 })();
 
+                (function () {
+  var Ext = window.Ext4 || window.Ext;
+
+  /**
+   * @private
+   */
+  Ext.define('Rally.apps.kanban.FlowStateColumnPolicy', {
+      extend: 'Ext.AbstractPlugin',
+      alias: 'plugin.flowstatecolumnpolicy',
+      requires: ['Rally.ui.cardboard.PolicyContainer'],
+
+      /**
+       * @cfg {Object}
+       * A component config for rendering policies
+       */
+      policyCmpConfig: null,
+
+      init: function(cmp) {
+          this.callParent(arguments);
+          this.cmp = cmp;
+
+          this.cmp.addEvents([
+              /**
+               * @event showpolicy
+               * fire to show policy
+               */
+              'showpolicy',
+              /**
+               * @event hidepolicy
+               * fire to hide policy
+               */
+              'hidepolicy'
+          ]);
+
+          this.cmp.on('afterrender', this._onAfterRender, this, {single: true});
+      },
+
+      _onAfterRender: function() {
+          this._addPolicyComponent();
+
+          this.cmp.on('showpolicy', function() {this._togglePolicy(true);}, this);
+          this.cmp.on('hidepolicy', function() {this._togglePolicy(false);}, this);
+      },
+
+      _addPolicyComponent: function () {
+          var policyCmpConfig = Ext.merge({
+              xtype: 'rallypolicycontainer',
+              itemId: 'policy',
+              context: this.cmp.getContext(),
+              columnName: this.cmp.getColumnHeader().getHeaderValue(),
+              hidden: true
+          }, this.policyCmpConfig);
+
+          this.cmp.getColumnHeader().add(policyCmpConfig);
+      },
+
+      _togglePolicy: function (showPolicy) {
+          var policyContainer = this.cmp.getColumnHeader().down('#policy');
+          if (policyContainer) {
+              if (showPolicy) {
+                  policyContainer.show();
+              } else {
+                  policyContainer.hide();
+              }
+          }
+      }
+  });
+})();
                 (function () {
     var Ext = window.Ext4 || window.Ext;
 
@@ -625,6 +693,7 @@
         requires: [
             'Rally.apps.kanban.Settings',
             'Rally.apps.kanban.Column',
+            'Rally.apps.kanban.FlowStateColumnPolicy',
             'Rally.ui.gridboard.GridBoard',
             'Rally.ui.gridboard.plugin.GridBoardAddNew',
             'Rally.ui.gridboard.plugin.BoardPolicyDisplayable',
@@ -838,8 +907,11 @@
                     enableWipLimit: true,
                     wipLimit: flowState.get('WIPLimit'),
                     plugins: [{
-                        ptype: 'rallycolumnpolicy',
-                        app: this
+                        ptype: 'flowstatecolumnpolicy',
+                        policyCmpConfig: {
+                            policies: flowState.get('ExitPolicy'),
+                            canEditPolicy: function() { return false; }
+                        }
                     }],
                     value: Rally.util.Ref.getRelativeUri(flowState),
                     columnHeaderConfig: {
@@ -1094,7 +1166,7 @@
 
 
             Rally.launchApp('Rally.apps.kanban.KanbanApp', {
-                name:"Kanban Board",
+                name:"FlowState Kanban Board",
 	            parentRepos:""
             });
 

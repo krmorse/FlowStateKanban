@@ -6,6 +6,7 @@
         requires: [
             'Rally.apps.kanban.Settings',
             'Rally.apps.kanban.Column',
+            'Rally.apps.kanban.FlowStateColumnPolicy',
             'Rally.ui.gridboard.GridBoard',
             'Rally.ui.gridboard.plugin.GridBoardAddNew',
             'Rally.ui.gridboard.plugin.BoardPolicyDisplayable',
@@ -219,8 +220,11 @@
                     enableWipLimit: true,
                     wipLimit: flowState.get('WIPLimit'),
                     plugins: [{
-                        ptype: 'rallycolumnpolicy',
-                        app: this
+                        ptype: 'flowstatecolumnpolicy',
+                        policyCmpConfig: {
+                            policies: flowState.get('ExitPolicy'),
+                            canEditPolicy: function() { return false; }
+                        }
                     }],
                     value: Rally.util.Ref.getRelativeUri(flowState),
                     columnHeaderConfig: {

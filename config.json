@@ -1,11 +1,12 @@
 {
-    "name": "Kanban Board",
+    "name": "FlowState Kanban Board",
     "className": "Rally.apps.kanban.KanbanApp",
     "server": "https://rally1.rallydev.com",
     "sdk": "2.1",
     "javascript": [
         "Overrides.js",
         "RowSettingsField.js",
+        "FlowStateColumnPolicy.js",
         "Column.js",
         "ColumnSettingsField.js",
         "Settings.js",
