@@ -10,4 +10,4 @@ This app is a fork of the app catalog [Kanban App](https://github.com/RallyApps/
 
 When using Flow State for the columns all normally configurable column settings (wip limits, exit agreements, schedule state mapping, etc.) are rendered readonly.  
 
-A project administrator configure the team's flow using the  settings tab of the Team Board page.
+A project administrator should configure the team's flow using the  settings tab of the Team Board page.
